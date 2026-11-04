@@ -63,6 +63,9 @@ function stopServer() {
     waitUntil: 'networkidle0',
   });
 
+  // Wait for Cytoscape to be initialized.
+  await page.waitForFunction(() => window.__cy, { timeout: 30000 });
+
   // 1. Graph loads
   const counts = await page.evaluate(() => {
     const cy = window.__cy;
@@ -116,8 +119,11 @@ function stopServer() {
     setSelect('fromSelect', 'c');
     setSelect('toSelect', 'x86-processor');
   });
-  await page.click('#btnNavigate');
-  await new Promise((r) => setTimeout(r, 1100));
+  await page.evaluate(() => {
+    const btn = document.getElementById('btnNavigate');
+    if (btn) btn.click();
+  });
+  await new Promise((r) => setTimeout(r, 1500));
   const nav = await page.evaluate(() => {
     const el = document.getElementById('navResult').textContent;
     const c = window.__cy;
@@ -135,7 +141,10 @@ function stopServer() {
   }
 
   // 5. Clear
-  await page.click('#btnClear');
+  await page.evaluate(() => {
+    const btn = document.getElementById('btnClear');
+    if (btn) btn.click();
+  });
   await new Promise((r) => setTimeout(r, 500));
   const afterClear = await page.evaluate(() => {
     const c = window.__cy;

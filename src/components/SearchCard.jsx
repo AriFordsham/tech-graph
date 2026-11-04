@@ -1,4 +1,7 @@
 import { useEffect } from 'react';
+import { Card, CardTitle } from './ui/card';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 export default function SearchCard({
   value,
@@ -19,26 +22,22 @@ export default function SearchCard({
   }, [labels]);
 
   return (
-    <div className="card card-search">
-      <label className="card-label">Find a technology</label>
+    <Card>
+      <CardTitle>Find a technology</CardTitle>
       <div className="search-wrap">
-        <input
-          type="search"
+        <Input
           id="nodeSearch"
           list="nodeList"
           value={value}
           onChange={onChange}
           placeholder="e.g. C, JavaScript, physical hardware"
-          aria-label="Find a node"
         />
         <datalist id="nodeList" />
-        <button id="btnGo" type="button" className="btn-primary btn-sm" onClick={onSearch}>
+        <Button variant="primary" size="sm" id="btnGo" onClick={onSearch}>
           Go
-        </button>
+        </Button>
       </div>
-      <div id="searchHint" className="hint">
-        {hint}
-      </div>
-    </div>
+      <div id="searchHint" className="hint">{hint}</div>
+    </Card>
   );
 }

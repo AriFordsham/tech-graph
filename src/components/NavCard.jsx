@@ -1,3 +1,9 @@
+import { Card, CardTitle } from './ui/card';
+import { Select } from './ui/select';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
+import { Separator } from './ui/separator';
+
 export default function NavCard({
   options,
   fromValue,
@@ -10,47 +16,46 @@ export default function NavCard({
   kind,
 }) {
   return (
-    <div className="card card-nav">
-      <label className="card-label">Navigate</label>
+    <Card>
+      <CardTitle>Navigate</CardTitle>
       <div className="row">
-        <select
+        <Label htmlFor="fromSelect">From</Label>
+        <Select
           id="fromSelect"
           value={fromValue}
           onChange={onFromChange}
-          aria-label="From node"
         >
-          <option value="">From</option>
+          <option value="">Select…</option>
           {options.map((opt) => (
             <option key={opt.id} value={opt.id}>
               {opt.label}
             </option>
           ))}
-        </select>
-        <select
+        </Select>
+        <Separator />
+        <Label htmlFor="toSelect">To</Label>
+        <Select
           id="toSelect"
           value={toValue}
           onChange={onToChange}
-          aria-label="To node"
         >
-          <option value="">To</option>
+          <option value="">Select…</option>
           {options.map((opt) => (
             <option key={opt.id} value={opt.id}>
               {opt.label}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
       <div className="row actions">
-        <button id="btnNavigate" type="button" className="btn-primary btn-sm" onClick={onNavigate}>
+        <Button variant="primary" size="sm" id="btnNavigate" onClick={onNavigate}>
           Navigate
-        </button>
-        <button id="btnClear" type="button" className="btn-outline btn-sm" onClick={onClear}>
+        </Button>
+        <Button variant="outline" size="sm" id="btnClear" onClick={onClear}>
           Clear
-        </button>
+        </Button>
       </div>
-      <div id="navResult" className={`hint nav-${kind}`}>
-        {message}
-      </div>
-    </div>
+      <div id="navResult" className={`hint nav-${kind}`}>{message}</div>
+    </Card>
   );
 }

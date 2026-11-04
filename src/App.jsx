@@ -1,6 +1,14 @@
+/* Tech Graph — React app using shadcn/ui primitives + Cytoscape.js */
+
 import cytoscape from 'cytoscape';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { toCyElements } from './data';
+import { Button } from './components/ui/button';
+import { Input } from './components/ui/input';
+import { Select } from './components/ui/select';
+import { Card, CardTitle } from './components/ui/card';
+import { Label } from './components/ui/label';
+import { Separator } from './components/ui/separator';
 import SearchCard from './components/SearchCard';
 import NavCard from './components/NavCard';
 import MapControls from './components/MapControls';
@@ -34,7 +42,7 @@ const CY_STYLE = [
     selector: 'node.root',
     style: {
       'border-width': 3,
-      'border-color': '#fbbf24',
+      'border-color': '#f59e0b',
       'font-size': 11,
       'z-index': 999,
     },
@@ -58,13 +66,13 @@ const CY_STYLE = [
       'z-index': 5,
     },
   },
-  { selector: '.node-dimmed', style: { opacity: 0.12 } },
-  { selector: '.edge-dimmed', style: { opacity: 0.08 } },
+  { selector: '.node-dimmed', style: { opacity: 0.15 } },
+  { selector: '.edge-dimmed', style: { opacity: 0.12 } },
   {
     selector: '.highlighted-node',
     style: {
-      'border-width': 5,
-      'border-color': '#fbbf24',
+      'border-width': 4,
+      'border-color': '#f59e0b',
       'z-index': 9999,
       opacity: 1,
     },
@@ -119,6 +127,9 @@ export default function App() {
     });
     cyRef.current = cy;
 
+    // Debug hook for testing / console inspection.
+    window.__cy = cy;
+
     const labels = cy.nodes().map((n) => n.data('label'));
     setNodeLabels(labels);
     setNodeOptions(
@@ -126,9 +137,6 @@ export default function App() {
         .sort((a, b) => a.data('label').localeCompare(b.data('label')))
         .map((n) => ({ id: n.id(), label: n.data('label') })),
     );
-
-    // Debug hook for testing / console inspection.
-    window.__cy = cy;
 
     cy.on('layoutend', () => fitAll(cy));
     fitAll(cy);
@@ -143,13 +151,13 @@ export default function App() {
     });
 
     // Map control buttons
-    zoomInRef.current.addEventListener('click', () =>
+    zoomInRef.current?.addEventListener('click', () =>
       cy.animate({ zoom: cy.zoom() * 1.4 }, { duration: 400 }),
     );
-    zoomOutRef.current.addEventListener('click', () =>
+    zoomOutRef.current?.addEventListener('click', () =>
       cy.animate({ zoom: cy.zoom() / 1.4 }, { duration: 400 }),
     );
-    fitRef.current.addEventListener('click', () => {
+    fitRef.current?.addEventListener('click', () => {
       clearHighlights(cy);
       fitAll(cy, 50, 700);
     });
@@ -157,13 +165,13 @@ export default function App() {
     window.addEventListener('resize', () => cy.resize());
 
     return () => {
-      zoomInRef.current.removeEventListener('click', () =>
+      zoomInRef.current?.removeEventListener('click', () =>
         cy.animate({ zoom: cy.zoom() * 1.4 }, { duration: 400 }),
       );
-      zoomOutRef.current.removeEventListener('click', () =>
+      zoomOutRef.current?.removeEventListener('click', () =>
         cy.animate({ zoom: cy.zoom() / 1.4 }, { duration: 400 }),
       );
-      fitRef.current.removeEventListener('click', () => {
+      fitRef.current?.removeEventListener('click', () => {
         clearHighlights(cy);
         fitAll(cy, 50, 700);
       });
@@ -180,10 +188,7 @@ export default function App() {
   }, []);
 
   const fitAll = useCallback((cy, padding = 40, duration = 700) => {
-    cy.animate(
-      { fit: { eles: cy.elements(), padding } },
-      { duration },
-    );
+    cy.animate({ fit: { eles: cy.elements(), padding } }, { duration });
   }, []);
 
   const fitNode = useCallback((cy, node, padding = 80, duration = 600) => {
@@ -229,16 +234,21 @@ export default function App() {
     clearHighlights(cy);
     setNavMessage('');
 
-    if (!fromValue || !toValue) {
+    // Read select values from DOM (robust to controlled-component state sync timing).
+    const fromEl = document.getElementById('fromSelect');
+    const toEl = document.getElementById('toSelect');
+    const fromId = (fromEl && fromEl.value) || '';
+    const toId = (toEl && toEl.value) || '';
+
+    if (!fromId || !toId) {
       setNavMessage('Pick both a From and a To node.');
       setNavKind('warn');
       return;
     }
 
-    const from = cy.nodes('#' + fromValue);
-    const to = cy.nodes('#' + toValue);
-
-    if (fromValue === toValue) {
+    const from = cy.nodes('#' + fromId);
+    const to = cy.nodes('#' + toId);
+    if (fromId === toId) {
       from.addClass('highlighted-node');
       fitNode(cy, from, 100, 700);
       setNavMessage(

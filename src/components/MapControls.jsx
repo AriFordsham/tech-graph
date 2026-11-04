@@ -1,31 +1,25 @@
+import { Card, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+
 export default function MapControls({
   zoomInRef,
   zoomOutRef,
   fitRef,
 }) {
   return (
-    <div className="card card-zoom">
-      <button
-        id="btnZoomIn"
-        ref={zoomInRef}
-        className="btn-outline btn-sm"
-        type="button"
-        title="Zoom in"
-      >
-        +
-      </button>
-      <button
-        id="btnZoomOut"
-        ref={zoomOutRef}
-        className="btn-outline btn-sm"
-        type="button"
-        title="Zoom out"
-      >
-        &minus;
-      </button>
-      <button id="btnFit" ref={fitRef} className="btn-outline btn-sm" type="button" title="Fit all nodes">
-        Fit all
-      </button>
-    </div>
+    <Card>
+      <CardTitle>Zoom</CardTitle>
+      <div className="row actions">
+        <Button variant="outline" size="sm" ref={zoomInRef} id="btnZoomIn" title="Zoom in">
+          +
+        </Button>
+        <Button variant="outline" size="sm" ref={zoomOutRef} id="btnZoomOut" title="Zoom out">
+          −
+        </Button>
+        <Button variant="outline" size="sm" ref={fitRef} id="btnFit" title="Fit all nodes">
+          Fit all
+        </Button>
+      </div>
+    </Card>
   );
 }
