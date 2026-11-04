@@ -1,7 +1,6 @@
 /* Tech Graph — shadcn/ui design system, white background theme.
 
 CSS variables follow shadcn/ui theming spec (OKLCH color space).
-Preset b1PziS referenced; default neutral light values applied with blue primary.
 */
 
 @layer base {
@@ -250,52 +249,73 @@ Preset b1PziS referenced; default neutral light values applied with blue primary
     cursor: grabbing;
   }
 
-  /* --- Overlay header --- */
-  .map-header {
+  /* --- Floating UI overlays --- */
+  .overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
     z-index: 20;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 12px 20px;
-    background: var(--background);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .brand {
-    font-weight: 600;
-    letter-spacing: -0.025em;
-    color: var(--primary);
-    font-size: 1.25rem;
-    margin-right: 8px;
-    white-space: nowrap;
-  }
-
-  .toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 14px;
-    flex: 1;
-    max-width: 1100px;
-  }
-
-  /* --- Footer --- */
-  .map-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    z-index: 20;
-    display: flex;
-    padding: 12px 20px;
-    background: var(--background);
-    border-top: 1px solid var(--border);
-  }
-  .map-footer > * {
     pointer-events: auto;
+  }
+
+  /* Search lozenge — top left, Google Maps style */
+  .search-lozenge {
+    top: 16px;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background: var(--background);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    padding: 2px 8px 2px 10px;
+    pointer-events: auto;
+  }
+  .search-lozenge input {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 2px 4px;
+    min-width: 170px;
+  }
+  .search-lozenge input::placeholder {
+    color: var(--muted-foreground);
+  }
+  .search-lozenge input:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: transparent;
+  }
+  .search-lozenge .lozenge-hint {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Nav lozenges — two pill inputs side by side */
+  .nav-lozenges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-lozenges input {
+    min-width: 150px;
+  }
+
+  /* Zoom controls — bottom right */
+  .zoom-controls {
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .zoom-controls button.btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 9999px;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   }
 
   /* --- Status hints --- */
@@ -307,6 +327,8 @@ Preset b1PziS referenced; default neutral light values applied with blue primary
   .nav-warn { color: var(--destructive); }
   .nav-ok { color: var(--primary); }
   .nav-info { color: var(--muted-foreground); }
+
+  .hidden { display: none !important; }
 
   /* --- Cytoscape visual classes (light mode) --- */
   .node-dimmed { opacity: 0.15 !important; }
@@ -351,7 +373,6 @@ Preset b1PziS referenced; default neutral light values applied with blue primary
   .text-foreground { color: var(--foreground); }
   .bg-background { background: var(--background); }
   .border-border { border-color: var(--border); }
-  .outline-ring\/50 { outline-color: var(--ring); outline-color: rgb(0 0 0 / 0.5); }
 }
 
 /* shadcn CSS variable root — OKLCH color space, white background */

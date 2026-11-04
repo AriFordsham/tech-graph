@@ -95,9 +95,13 @@ function stopServer() {
   if (pathInfo.hops !== 3) throw new Error('expected 3 hops');
 
   // 3. Search -> pan to node
+  console.log('STEP 3: typing search...');
   await page.type('#nodeSearch', 'JavaScript');
+  console.log('STEP 3: typed, clicking Go...');
   await page.click('#btnGo');
+  console.log('STEP 3: clicked Go, waiting...');
   await new Promise((r) => setTimeout(r, 900));
+  console.log('STEP 3: reading hint...');
   const hint = await page.evaluate(
     () => document.getElementById('searchHint').textContent,
   );
@@ -105,6 +109,10 @@ function stopServer() {
   if (!hint.includes('Panned to')) throw new Error('search did not pan');
 
   // 4. From/To navigation
+  await page.evaluate(() => {
+    const btn = document.getElementById('btnDirections');
+    if (btn) btn.click();
+  });
   await page.waitForFunction(() => {
     const s = document.getElementById('fromSelect');
     return s && s.options.length > 1;
@@ -125,13 +133,13 @@ function stopServer() {
   });
   await new Promise((r) => setTimeout(r, 1500));
   const nav = await page.evaluate(() => {
-    const el = document.getElementById('navResult').textContent;
+    const el = document.getElementById('navResult');
     const c = window.__cy;
     return {
-      msg: el,
-      highlightedNodes: c.nodes('.highlighted-node').length,
-      highlightedEdges: c.edges('.highlighted-edge').length,
-      dimmed: c.elements('.node-dimmed').length,
+      msg: el ? el.textContent : null,
+      highlightedNodes: c ? c.nodes('.highlighted-node').length : 0,
+      highlightedEdges: c ? c.edges('.highlighted-edge').length : 0,
+      dimmed: c ? c.elements('.node-dimmed').length : 0,
     };
   });
   console.log('navigation:', nav);

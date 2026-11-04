@@ -4,8 +4,8 @@
 Web app visualizing a graph of technologies, styled like a mapping app (shadcn/ui design system, white background).
 - **Nodes** = languages / language-like abstractions (all same color); **edges** = technologies (`interpret` / `translate`)
 - Mapping-app feel: full-screen pan/zoom canvas, overlay controls, zoom buttons
-- **Search** a node → pan + zoom to it
-- **Navigation**: from/to → `eles.dijkstra()` shortest path, highlighted subgraph, dimmed rest
+- **Search** a node → pan + zoom to it (floating Google Maps-style lozenge top-left)
+- **Navigation**: from/to → `eles.dijkstra()` shortest path, highlighted subgraph, dimmed rest (two-lozenge view via Directions button)
 
 ## Stack
 - React 18 + Vite, Cytoscape.js (npm)
@@ -22,9 +22,9 @@ src/lib/utils.js     # cn() utility
 src/data.js          # graph data: NODES (19) + EDGES (19)
 src/components/ui/   # button, input, select, card, label, separator
 src/components/
-  SearchCard.jsx     # node search → pan
-  NavCard.jsx        # from/to → dijkstra shortest path
-  MapControls.jsx    # zoom in/out/fit all
+  SearchCard.jsx     # node search → pan (not used in current layout)
+  NavCard.jsx        # from/to → dijkstra shortest path (not used in current layout)
+  MapControls.jsx    # zoom in/out/fit all (not used in current layout)
 dist/                # production build
 e2e.test.js          # puppeteer test (passes)
 ```
@@ -40,8 +40,8 @@ e2e.test.js          # puppeteer test (passes)
 - [x] React port with shadcn/ui components on white background
 - [x] All nodes same color (no color differentiation); no legend
 - [x] Graph seeded with all example nodes/edges
-- [x] Map UI: pan (drag), zoom (scroll/+−), fit all
-- [x] Node search → pan + zoom
+- [x] Map UI: pan (drag), zoom (scroll/+−/buttons), fit all
+- [x] Node search → pan + zoom (floating lozenge top-left)
 - [x] From/to navigation → dijkstra shortest path, highlighted subgraph, dimmed rest, Clear reset
 - [x] `npm run build` → `dist/`
 - [x] `npm test` (headless Chromium e2e) → PASSED
