@@ -15,7 +15,8 @@ Preset b1PziS referenced; default neutral light values applied with blue primary
 
   html,
   body,
-  #root {
+  #root,
+  .app {
     margin: 0;
     padding: 0;
     width: 100%;
