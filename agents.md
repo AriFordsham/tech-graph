@@ -1,5 +1,9 @@
 # tech-graph — Project Status
 
+This document should be kept up to date with the current status. Codebase should be kept clean and DRY. 
+Documents and comments should be maintained to only keep information relevant to the present and the future, 
+not document irrelevant past choices and historical details. 
+
 ## Goal
 A web app that visualizes a graph of technologies, styled like a mapping app using **shadcn/ui** design system on a **white background**.
 - **Nodes** = languages / language-like abstractions; **edges** = technologies (`interpret` / `translate`)
@@ -76,3 +80,4 @@ npm test             # e2e test (builds, serves dist, drives headless Chromium)
 - `window.__cy` debug hook exposed for console inspection/testing.
 - Edge labels drawn small along bezier curves; readable at higher zoom levels.
 - Select values read from DOM in navigate handler (robust to React controlled-component state sync timing in test automation).
+- Node label readability fixed: Cytoscape `text-outline-color` changed from white (`#ffffff`) to dark (`#0b1021`) so labels are visible against the white canvas.
