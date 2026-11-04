@@ -41,10 +41,10 @@ export default function NavCard({
         </select>
       </div>
       <div className="row actions">
-        <button id="btnNavigate" type="button" onClick={onNavigate}>
+        <button id="btnNavigate" type="button" className="btn-primary btn-sm" onClick={onNavigate}>
           Navigate
         </button>
-        <button id="btnClear" type="button" onClick={onClear}>
+        <button id="btnClear" type="button" className="btn-outline btn-sm" onClick={onClear}>
           Clear
         </button>
       </div>

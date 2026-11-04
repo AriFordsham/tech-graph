@@ -32,7 +32,7 @@ export default function SearchCard({
           aria-label="Find a node"
         />
         <datalist id="nodeList" />
-        <button id="btnGo" type="button" onClick={onSearch}>
+        <button id="btnGo" type="button" className="btn-primary btn-sm" onClick={onSearch}>
           Go
         </button>
       </div>
