@@ -28,7 +28,7 @@ const CY_STYLE = [
       'text-wrap': 'wrap',
       'text-max-width': 130,
       'text-outline-width': 2,
-      'text-outline-color': '#ffffff',
+      'text-outline-color': '#0b1021',
       'background-color': 'data(color)',
       'border-width': 2,
       'border-color': '#cbd5e1',
