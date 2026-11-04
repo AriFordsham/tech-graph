@@ -283,7 +283,7 @@ Preset b1PziS referenced; default neutral light values applied with blue primary
     max-width: 1100px;
   }
 
-  /* --- Footer / Legend --- */
+  /* --- Footer --- */
   .map-footer {
     position: absolute;
     bottom: 0;
@@ -297,64 +297,6 @@ Preset b1PziS referenced; default neutral light values applied with blue primary
   .map-footer > * {
     pointer-events: auto;
   }
-
-  .legend {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 16px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--card);
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  }
-
-  .legend-title {
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--muted-foreground);
-    margin-bottom: 4px;
-  }
-
-  .legend-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 8px 16px;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.875rem;
-    color: var(--foreground);
-  }
-
-  .swatch {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 3px;
-    border: 1px solid rgb(0 0 0 / 0.15);
-    flex-shrink: 0;
-  }
-  .swatch.node { border-radius: 50%; }
-  .swatch.edge {
-    height: 3px;
-    border-radius: 2px;
-    border: none;
-  }
-  .swatch.node.language { background: #2563eb; }
-  .swatch.node.assembly { background: #7c3aed; }
-  .swatch.node.machine-code { background: #0ea5e9; }
-  .swatch.node.bytecode { background: #14b8a6; }
-  .swatch.node.runtime { background: #15803d; }
-  .swatch.node.engine { background: #b45309; }
-  .swatch.node.hardware { background: #6b7280; }
-  .swatch.edge.interpret { background: #3b82f6; }
-  .swatch.edge.translate { background: #f59e0b; }
 
   /* --- Status hints --- */
   .hint {

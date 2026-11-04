@@ -12,7 +12,6 @@ import { Separator } from './components/ui/separator';
 import SearchCard from './components/SearchCard';
 import NavCard from './components/NavCard';
 import MapControls from './components/MapControls';
-import Legend from './components/Legend';
 import './App.css';
 
 const CY_STYLE = [
@@ -328,7 +327,6 @@ export default function App() {
         </div>
       </header>
       <footer className="map-footer">
-        <Legend />
         <div className="hint">
           Drag to pan &bull; Scroll to zoom &bull; Click a node to centre on it
         </div>

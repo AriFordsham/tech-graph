@@ -2,8 +2,8 @@
 
 ## Goal
 Web app visualizing a graph of technologies, styled like a mapping app (shadcn/ui design system, white background).
-- **Nodes** = languages / language-like abstractions; **edges** = technologies (`interpret` / `translate`)
-- Mapping-app feel: full-screen pan/zoom canvas, overlay controls, legend, zoom buttons
+- **Nodes** = languages / language-like abstractions (all same color); **edges** = technologies (`interpret` / `translate`)
+- Mapping-app feel: full-screen pan/zoom canvas, overlay controls, zoom buttons
 - **Search** a node → pan + zoom to it
 - **Navigation**: from/to → `eles.dijkstra()` shortest path, highlighted subgraph, dimmed rest
 
@@ -25,7 +25,6 @@ src/components/
   SearchCard.jsx     # node search → pan
   NavCard.jsx        # from/to → dijkstra shortest path
   MapControls.jsx    # zoom in/out/fit all
-  Legend.jsx         # node/edge type legend
 dist/                # production build
 e2e.test.js          # puppeteer test (passes)
 ```
@@ -39,8 +38,9 @@ e2e.test.js          # puppeteer test (passes)
 
 ## Current state — COMPLETE
 - [x] React port with shadcn/ui components on white background
+- [x] All nodes same color (no color differentiation); no legend
 - [x] Graph seeded with all example nodes/edges
-- [x] Map UI: pan (drag), zoom (scroll/+−), fit all, legend
+- [x] Map UI: pan (drag), zoom (scroll/+−), fit all
 - [x] Node search → pan + zoom
 - [x] From/to navigation → dijkstra shortest path, highlighted subgraph, dimmed rest, Clear reset
 - [x] `npm run build` → `dist/`

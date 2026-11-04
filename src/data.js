@@ -7,35 +7,29 @@ Edges = technologies (typically programs) connecting nodes, of two types:
 */
 
 export const NODE_TYPES = {
-  hardware:   { color: '#6b7280', size: 44 },
-  language:   { color: '#2563eb', size: 34 },
-  assembly:   { color: '#7c3aed', size: 30 },
-  'machine-code': { color: '#0ea5e9', size: 28 },
-  bytecode:   { color: '#14b8a6', size: 26 },
-  runtime:    { color: '#15803d', size: 30 },
-  engine:     { color: '#b45309', size: 26 },
+  default: { color: '#2563eb', size: 30 },
 };
 
 export const NODES = [
-  { id: 'physical-hardware', label: 'physical hardware', type: 'hardware', root: true },
-  { id: 'x86-processor',   label: 'x86 processor',   type: 'hardware' },
-  { id: 'arm-processor',   label: 'ARM processor',   type: 'hardware' },
-  { id: 'x86-machine-code', label: 'x86 machine code', type: 'machine-code' },
-  { id: 'arm-machine-code', label: 'ARM machine code', type: 'machine-code' },
-  { id: 'intel-assembly', label: 'Intel Assembly', type: 'assembly' },
-  { id: 'arm-assembly',   label: 'ARM Assembly',   type: 'assembly' },
-  { id: 'c',      label: 'C',              type: 'language' },
-  { id: 'cpp',    label: 'C++',            type: 'language' },
-  { id: 'java',   label: 'Java',           type: 'language' },
-  { id: 'js',     label: 'JavaScript',     type: 'language' },
-  { id: 'python', label: 'Python',         type: 'language' },
-  { id: 'java-bytecode',   label: 'Java bytecode',   type: 'bytecode' },
-  { id: 'python-bytecode', label: 'Python bytecode', type: 'bytecode' },
-  { id: 'jvm',      label: 'JVM',          type: 'runtime' },
-  { id: 'cpython',  label: 'CPython',      type: 'runtime' },
-  { id: 'browser',  label: 'web browser',  type: 'runtime' },
-  { id: 'nodejs',   label: 'Node.js',      type: 'runtime' },
-  { id: 'v8',       label: 'V8',           type: 'engine' },
+  { id: 'physical-hardware', label: 'physical hardware', type: 'hardware', root: true, size: 44 },
+  { id: 'x86-processor',   label: 'x86 processor',   type: 'hardware', size: 30 },
+  { id: 'arm-processor',   label: 'ARM processor',   type: 'hardware', size: 30 },
+  { id: 'x86-machine-code', label: 'x86 machine code', type: 'machine-code', size: 30 },
+  { id: 'arm-machine-code', label: 'ARM machine code', type: 'machine-code', size: 30 },
+  { id: 'intel-assembly', label: 'Intel Assembly', type: 'assembly', size: 30 },
+  { id: 'arm-assembly',   label: 'ARM Assembly',   type: 'assembly', size: 30 },
+  { id: 'c',      label: 'C',              type: 'language', size: 30 },
+  { id: 'cpp',    label: 'C++',            type: 'language', size: 30 },
+  { id: 'java',   label: 'Java',           type: 'language', size: 30 },
+  { id: 'js',     label: 'JavaScript',     type: 'language', size: 30 },
+  { id: 'python', label: 'Python',         type: 'language', size: 30 },
+  { id: 'java-bytecode',   label: 'Java bytecode',   type: 'bytecode', size: 30 },
+  { id: 'python-bytecode', label: 'Python bytecode', type: 'bytecode', size: 30 },
+  { id: 'jvm',      label: 'JVM',          type: 'runtime', size: 30 },
+  { id: 'cpython',  label: 'CPython',      type: 'runtime', size: 30 },
+  { id: 'browser',  label: 'web browser',  type: 'runtime', size: 30 },
+  { id: 'nodejs',   label: 'Node.js',      type: 'runtime', size: 30 },
+  { id: 'v8',       label: 'V8',           type: 'engine', size: 30 },
 ];
 
 export const EDGES = [
@@ -61,8 +55,8 @@ export const EDGES = [
 ];
 
 export function toCyElements() {
+  const defaultColor = NODE_TYPES.default.color;
   const nodeEls = NODES.map((n) => {
-    const t = NODE_TYPES[n.type] || NODE_TYPES.language;
     return {
       group: 'nodes',
       data: {
@@ -70,8 +64,8 @@ export function toCyElements() {
         label: n.label,
         type: n.type,
         root: !!n.root,
-        color: t.color,
-        size: n.root ? t.size + 14 : t.size,
+        color: defaultColor,
+        size: n.size || NODE_TYPES.default.size,
       },
     };
   });
