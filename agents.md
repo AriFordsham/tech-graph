@@ -21,10 +21,6 @@ src/App.css          # shadcn CSS variables + component styles
 src/lib/utils.js     # cn() utility
 src/data.js          # graph data: NODES (19) + EDGES (19)
 src/components/ui/   # button, input, select, card, label, separator
-src/components/
-  SearchCard.jsx     # node search → pan (not used in current layout)
-  NavCard.jsx        # from/to → dijkstra shortest path (not used in current layout)
-  MapControls.jsx    # zoom in/out/fit all (not used in current layout)
 dist/                # production build
 e2e.test.js          # puppeteer test (passes)
 ```
@@ -45,6 +41,12 @@ e2e.test.js          # puppeteer test (passes)
 - [x] From/to navigation → dijkstra shortest path, highlighted subgraph, dimmed rest, Clear reset
 - [x] `npm run build` → `dist/`
 - [x] `npm test` (headless Chromium e2e) → PASSED
+
+## UI layout (final)
+- **Top-left**: floating search lozenge (Google Maps style) with `🔍` Go and `🗺️` Directions icon buttons
+- **Directions toggle**: expands to two stacked lozenges (From / To selects) + Navigate / Clear buttons
+- **Bottom-right**: clean zoom controls (+, −, ⤢) icon buttons with no labels
+- **No fixed top panel; no bottom hint text**
 
 ## How to run
 ```bash

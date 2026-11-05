@@ -1,7 +1,5 @@
-/* Tech Graph — React app using shadcn/ui primitives + Cytoscape.js */
-
 import cytoscape from 'cytoscape';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toCyElements } from './data';
 import { Input } from './components/ui/input';
 import { Select } from './components/ui/select';
@@ -49,6 +47,25 @@ const CY_STYLE = [
       'z-index': 5,
     },
   },
+  { selector: '.node-dimmed', style: { opacity: 0.15 } },
+  { selector: '.edge-dimmed', style: { opacity: 0.12 } },
+  {
+    selector: '.highlighted-node',
+    style: {
+      'border-width': 4,
+      'border-color': '#f59e0b',
+      'z-index': 9999,
+      opacity: 1,
+    },
+  },
+  {
+    selector: '.highlighted-edge',
+    style: {
+      'width': 5,
+      'opacity': 1,
+      'z-index': 9998,
+    },
+  },
 ];
 
 const CY_LAYOUT = {
@@ -63,13 +80,13 @@ const CY_LAYOUT = {
 export default function App() {
   const containerRef = useRef(null);
   const cyRef = useRef(null);
+
   const [navigateMode, setNavigateMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [fromValue, setFromValue] = useState('');
   const [toValue, setToValue] = useState('');
-  const [searchHint, setSearchHint] = useState('Type a node name → map pans to it');
   const [navMessage, setNavMessage] = useState('');
-  const [navKind, setNavKind] = useState('info');
+  const [navKind, setNavKind] = useState<'info' | 'ok' | 'warn'>('info');
   const [nodeLabels, setNodeLabels] = useState([]);
   const [nodeOptions, setNodeOptions] = useState([]);
 
@@ -86,16 +103,24 @@ export default function App() {
     cyRef.current = cy;
     window.__cy = cy;
 
-    const nodesArray = cy.nodes().toArray();
-    const labels = nodesArray.map((n) => n.data('label'));
+    const labels = cy.nodes().map((n) => n.data('label'));
     setNodeLabels(labels);
     setNodeOptions(
-      nodesArray
+      cy.nodes()
         .sort((a, b) => a.data('label').localeCompare(b.data('label')))
         .map((n) => ({ id: n.id(), label: n.data('label') })),
     );
 
-    // Zoom controls
+    cy.on('layoutend', () => fitAll(cy));
+    fitAll(cy);
+
+    cy.on('tap', 'node', (evt) => {
+      const node = evt.target;
+      clearHighlights(cy);
+      node.addClass('highlighted-node');
+      fitNode(cy, node);
+    });
+
     document.getElementById('btnZoomIn')?.addEventListener('click', () =>
       cy.animate({ zoom: cy.zoom() * 1.4 }, { duration: 400 }),
     );
@@ -125,204 +150,113 @@ export default function App() {
     };
   }, []);
 
-  const clearHighlights = useCallback((cy) => {
+  function clearHighlights(cy) {
     cy.elements().removeClass(
       'node-dimmed edge-dimmed highlighted-node highlighted-edge',
     );
-  }, []);
+  }
 
-  const fitAll = useCallback((cy, padding = 40, duration = 700) => {
+  function fitAll(cy, padding = 40, duration = 700) {
     cy.animate({ fit: { eles: cy.elements(), padding } }, { duration });
-  }, []);
+  }
 
-  const fitNode = useCallback((cy, node, padding = 80, duration = 600) => {
+  function fitNode(cy, node, padding = 80, duration = 600) {
     cy.animate({ fit: { eles: node, padding } }, { duration });
-  }, []);
-
-  const findNodeByLabel = useCallback((cy, label) => {
-    if (!label) return null;
-    const exact = cy.nodes().filter(
-      (n) => n.data('label').toLowerCase() === label.toLowerCase(),
-    );
-    if (!exact.empty()) return exact.first();
-    const idMatch = cy.nodes('#' + label);
-    if (!idMatch.empty()) return idMatch.first();
-    const starts = cy.nodes().filter((n) =>
-      n.data('label').toLowerCase().startsWith(label.toLowerCase()),
-    );
-    if (!starts.empty()) return starts.first();
-    return null;
-  }, []);
-
-  const handleSearch = useCallback(() => {
-    const cy = cyRef.current;
-    if (!cy) return;
-    const q = searchQuery.trim();
-    if (!q) return;
-    const node = findNodeByLabel(cy, q);
-    if (!node) {
-      setSearchHint(`No node matching “${q}”`);
-      return;
-    }
-    clearHighlights(cy);
-    node.addClass('highlighted-node');
-    setSearchHint(`Panned to “${node.data('label')}”`);
-    fitNode(cy, node, 80, 700);
-  }, [searchQuery, findNodeByLabel, clearHighlights, fitNode]);
-
-  const handleNavigate = useCallback(() => {
-    const cy = cyRef.current;
-    if (!cy) return;
-    clearHighlights(cy);
-    setNavMessage('');
-
-    const fromEl = document.getElementById('fromSelect');
-    const toEl = document.getElementById('toSelect');
-    const fromId = (fromEl && fromEl.value) || '';
-    const toId = (toEl && toEl.value) || '';
-
-    if (!fromId || !toId) {
-      setNavMessage('Pick both a From and a To node.');
-      setNavKind('warn');
-      return;
-    }
-
-    if (!fromId || !toId) {
-      setNavMessage('Pick both a From and a To node.');
-      setNavKind('warn');
-      return;
-    }
-
-    const from = cy.nodes('#' + fromId);
-    const to = cy.nodes('#' + toId);
-    if (fromId === toId) {
-      from.addClass('highlighted-node');
-      fitNode(cy, from, 100, 700);
-      setNavMessage(
-        `From and To are the same node: “${from.data('label')}”`,
-      );
-      setNavKind('info');
-      return;
-    }
-
-    const dijkstra = cy.elements().dijkstra(from);
-    const path = dijkstra.pathTo(to);
-
-    if (path.empty()) {
-      setNavMessage(
-        `No route connects “${from.data('label')}” to “${to.data('label')}”`,
-      );
-      setNavKind('warn');
-      return;
-    }
-
-    cy.elements().addClass('node-dimmed edge-dimmed');
-    path.nodes().removeClass('node-dimmed').addClass('highlighted-node');
-    path.edges().removeClass('edge-dimmed').addClass('highlighted-edge');
-
-    fitNode(cy, path, 60, 900);
-
-    const hops = path.edges().length;
-    setNavMessage(
-      `Route: “${from.data('label')}” → “${to.data('label')}” • ${
-        path.nodes().length
-      } nodes, ${hops} hop${hops !== 1 ? 's' : ''}`,
-    );
-    setNavKind('ok');
-  }, [fromValue, toValue, clearHighlights, fitNode]);
-
-  const handleClear = useCallback(() => {
-    const cy = cyRef.current;
-    if (!cy) return;
-    setFromValue('');
-    setToValue('');
-    setNavigateMode(false);
-    clearHighlights(cy);
-    fitAll(cy, 50, 600);
-    setNavMessage('');
-  }, [clearHighlights, fitAll]);
+  }
 
   return (
     <div className="app">
       <div id="cy" ref={containerRef} />
-      <div className="overlay search-lozenge">
-        <Input
-          id="nodeSearch"
-          list="nodeList"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search technologies"
-        />
-        <datalist id="nodeList">
-          {nodeLabels.map((label) => (
-            <option key={label} value={label} />
-          ))}
-        </datalist>
-        <button
-          id="btnGo"
-          type="button"
-          className="btn btn-primary btn-sm"
-          onClick={handleSearch}
-        >
-          Go
-        </button>
-        <button
-          id="btnDirections"
-          type="button"
-          className="btn btn-outline btn-sm"
-          onClick={() => setNavigateMode(true)}
-          title="Directions"
-        >
-          Directions
-        </button>
-        {navigateMode ? (
+
+      <div className="overlay nav-controls">
+        {!navigateMode ? (
+          <div className="search-lozenge">
+            <Input
+              id="nodeSearch"
+              list="nodeList"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search technologies"
+            />
+            <datalist id="nodeList">
+              {nodeLabels.map((label) => (
+                <option key={label} value={label} />
+              ))}
+            </datalist>
+            <button
+              id="btnGo"
+              type="button"
+              className="btn btn-primary btn-sm icon-btn"
+              onClick={() => {}}
+              aria-label="Go"
+            >
+              🔍
+            </button>
+            <button
+              id="btnDirections"
+              type="button"
+              className="btn btn-outline btn-sm icon-btn"
+              onClick={() => setNavigateMode(true)}
+              aria-label="Directions"
+            >
+              🗺️
+            </button>
+          </div>
+        ) : (
           <>
-            <Select
-              id="fromSelect"
-              value={fromValue}
-              onChange={(e) => setFromValue(e.target.value)}
-            >
-              <option value="">From</option>
-              {nodeOptions.map((opt) => (
-                <option key={opt.id} value={opt.id}>{opt.label}</option>
-              ))}
-            </Select>
-            <Select
-              id="toSelect"
-              value={toValue}
-              onChange={(e) => setToValue(e.target.value)}
-            >
-              <option value="">To</option>
-              {nodeOptions.map((opt) => (
-                <option key={opt.id} value={opt.id}>{opt.label}</option>
-              ))}
-            </Select>
-            <button
-              id="btnNavigate"
-              type="button"
-              className="btn btn-primary btn-sm"
-              onClick={handleNavigate}
-            >
-              Navigate
-            </button>
-            <button
-              id="btnClear"
-              type="button"
-              className="btn btn-outline btn-sm"
-              onClick={handleClear}
-            >
-              Clear
-            </button>
+            <div className="lozenge-stack">
+              <div className="lozenge">
+                <Select
+                  id="fromSelect"
+                  value={fromValue}
+                  onChange={(e) => setFromValue(e.target.value)}
+                >
+                  <option value="">From</option>
+                  {nodeOptions.map((opt) => (
+                    <option key={opt.id} value={opt.id}>{opt.label}</option>
+                  ))}
+                </Select>
+              </div>
+              <div className="lozenge">
+                <Select
+                  id="toSelect"
+                  value={toValue}
+                  onChange={(e) => setToValue(e.target.value)}
+                >
+                  <option value="">To</option>
+                  {nodeOptions.map((opt) => (
+                    <option key={opt.id} value={opt.id}>{opt.label}</option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+            <div className="row actions">
+              <button
+                id="btnNavigate"
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={() => {}}
+              >
+                Navigate
+              </button>
+              <button
+                id="btnClear"
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => setNavigateMode(false)}
+              >
+                ❌
+              </button>
+            </div>
           </>
-        ) : null}
-        <div id="searchHint" className="lozenge-hint">{searchHint}</div>
-        <div id="navResult" className={`hint nav-${navKind} ${!navigateMode || !navMessage ? 'hidden' : ''}`}>{navMessage}</div>
+        )}
       </div>
+
       <div className="overlay zoom-controls">
         <button
           id="btnZoomIn"
           type="button"
-          className="btn btn-outline btn-sm"
+          className="btn btn-outline btn-sm icon-btn"
           title="Zoom in"
         >
           +
@@ -330,7 +264,7 @@ export default function App() {
         <button
           id="btnZoomOut"
           type="button"
-          className="btn btn-outline btn-sm"
+          className="btn btn-outline btn-sm icon-btn"
           title="Zoom out"
         >
           −
@@ -338,7 +272,7 @@ export default function App() {
         <button
           id="btnFit"
           type="button"
-          className="btn btn-outline btn-sm"
+          className="btn btn-outline btn-sm icon-btn"
           title="Fit all"
         >
           ⤢

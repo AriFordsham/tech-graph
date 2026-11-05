@@ -262,7 +262,7 @@ CSS variables follow shadcn/ui theming spec (OKLCH color space).
     left: 16px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     border: 1px solid var(--border);
     border-radius: 9999px;
     background: var(--background);
@@ -285,22 +285,53 @@ CSS variables follow shadcn/ui theming spec (OKLCH color space).
     box-shadow: none;
     border-color: transparent;
   }
-  .search-lozenge .lozenge-hint {
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-    pointer-events: none;
-    user-select: none;
-  }
 
-  /* Nav lozenges — two pill inputs side by side */
-  .nav-lozenges {
+  /* Two stacked lozenges for directions mode */
+  .lozenge-stack {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 6px;
   }
-  .nav-lozenges input {
-    min-width: 150px;
+  .lozenge {
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background: var(--background);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    padding: 2px 8px;
   }
+  .lozenge select {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 2px 4px;
+    min-width: 150px;
+    appearance: none;
+    background-image: none;
+    padding-right: 4px;
+  }
+  .lozenge select:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: transparent;
+  }
+
+  /* Icon-only buttons */
+  .icon-btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Hidden utility */
+  .hidden { display: none !important; }
 
   /* Zoom controls — bottom right */
   .zoom-controls {
@@ -327,8 +358,6 @@ CSS variables follow shadcn/ui theming spec (OKLCH color space).
   .nav-warn { color: var(--destructive); }
   .nav-ok { color: var(--primary); }
   .nav-info { color: var(--muted-foreground); }
-
-  .hidden { display: none !important; }
 
   /* --- Cytoscape visual classes (light mode) --- */
   .node-dimmed { opacity: 0.15 !important; }

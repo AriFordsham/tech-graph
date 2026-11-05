@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const PORT = 5174;
+const PORT = 5230;
 const distDir = join(process.cwd(), 'dist');
 
 let server;
@@ -101,12 +101,13 @@ function stopServer() {
   await page.click('#btnGo');
   console.log('STEP 3: clicked Go, waiting...');
   await new Promise((r) => setTimeout(r, 900));
-  console.log('STEP 3: reading hint...');
-  const hint = await page.evaluate(
-    () => document.getElementById('searchHint').textContent,
-  );
-  console.log('search hint:', hint);
-  if (!hint.includes('Panned to')) throw new Error('search did not pan');
+  console.log('STEP 3: verifying node was centred...');
+  const highlighted = await page.evaluate(() => {
+    const cy = window.__cy;
+    return cy.nodes('.highlighted-node').map(n => n.data('label'));
+  });
+  console.log('highlighted nodes:', highlighted);
+  if (!highlighted.includes('JavaScript')) throw new Error('search did not pan');
 
   // 4. From/To navigation
   await page.evaluate(() => {
