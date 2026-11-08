@@ -10,7 +10,6 @@ export type EdgeType = 'interpret' | 'translate';
 
 export interface NodeTypeDef {
   color: string;
-  size: number;
 }
 
 export interface Node {
@@ -18,7 +17,6 @@ export interface Node {
   label: string;
   type: string;
   root?: boolean;
-  size?: number;
 }
 
 export interface Edge {
@@ -30,22 +28,64 @@ export interface Edge {
 }
 
 export const NODE_TYPES: Record<string, NodeTypeDef> = {
-  default: { color: '#2563eb', size: 30 },
+  default: { color: '#2563eb' },
 };
 
 export const NODES: Node[] = [
-  { id: 'physical-hardware', label: 'physical hardware', type: 'hardware', root: true, size: 44 },
-  { id: 'x86-machine-code', label: 'x86 machine code', type: 'machine-code', size: 30 },
-  { id: 'arm-machine-code', label: 'ARM machine code', type: 'machine-code', size: 30 },
-  { id: 'intel-assembly', label: 'Intel Assembly', type: 'assembly', size: 30 },
-  { id: 'arm-assembly',   label: 'ARM Assembly',   type: 'assembly', size: 30 },
-  { id: 'c',      label: 'C',              type: 'language', size: 30 },
-  { id: 'cpp',    label: 'C++',            type: 'language', size: 30 },
-  { id: 'java',   label: 'Java',           type: 'language', size: 30 },
-  { id: 'python', label: 'Python',         type: 'language', size: 30 },
-  { id: 'java-bytecode',   label: 'Java bytecode',   type: 'bytecode', size: 30 },
-  { id: 'python-bytecode', label: 'Python bytecode', type: 'bytecode', size: 30 },
+  { id: 'physical-hardware', label: 'physical hardware', type: 'hardware', root: true },
+  { id: 'x86-machine-code', label: 'x86 machine code', type: 'machine-code' },
+  { id: 'arm-machine-code', label: 'ARM machine code', type: 'machine-code' },
+  { id: 'intel-assembly', label: 'Intel Assembly', type: 'assembly' },
+  { id: 'arm-assembly',   label: 'ARM Assembly',   type: 'assembly' },
+  { id: 'c',      label: 'C',              type: 'language' },
+  { id: 'cpp',    label: 'C++',            type: 'language' },
+  { id: 'java',   label: 'Java',           type: 'language' },
+  { id: 'python', label: 'Python',         type: 'language' },
+  { id: 'java-bytecode',   label: 'Java bytecode',   type: 'bytecode' },
+  { id: 'python-bytecode', label: 'Python bytecode', type: 'bytecode' },
 ];
+
+/**
+ * Estimate the box dimensions needed to fit a node's label.
+ * Wraps words at maxWidth, then computes width from the longest line
+ * and height from the line count, plus padding.
+ */
+function computeNodeDimensions(label: string): { width: number; height: number } {
+  const fontSize = 10;
+  const charWidth = fontSize * 0.5; // conservative avg char width (px)
+  const lineHeight = fontSize * 1.25;
+  const paddingX = 10;
+  const paddingY = 6;
+  const maxWidth = 120;
+
+  const charsPerLine = Math.floor(maxWidth / charWidth);
+
+  // Simple word wrap to count lines and find the longest line.
+  const words = label.split(' ');
+  let lines = 1;
+  const lineLengths: number[] = [];
+  let lineLen = 0;
+
+  for (const word of words) {
+    const wl = word.length;
+    if (lineLen === 0) {
+      lineLen = wl;
+    } else if (lineLen + 1 + wl <= charsPerLine) {
+      lineLen += 1 + wl;
+    } else {
+      lineLengths.push(lineLen);
+      lineLen = wl;
+      lines++;
+    }
+  }
+  lineLengths.push(lineLen);
+  const maxLineLen = Math.max(...lineLengths);
+
+  const width = Math.max(maxLineLen * charWidth + paddingX, 32);
+  const height = Math.max(lines * lineHeight + paddingY, 20);
+
+  return { width, height };
+}
 
 export const EDGES: Edge[] = [
   { id: 'e1', source: 'x86-machine-code', target: 'physical-hardware', type: 'interpret', label: 'x86 processor' },
@@ -70,7 +110,7 @@ export function toCyElements(): cytoscape.ElementDefinition[] {
       type: n.type,
       root: !!n.root,
       color: (NODE_TYPES[n.type]?.color) ?? NODE_TYPES.default.color,
-      size: n.size ?? NODE_TYPES.default.size,
+      ...computeNodeDimensions(n.label),
     },
   }));
 
