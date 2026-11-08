@@ -1,6 +1,6 @@
 # tech-graph — Project Status
 
-K
+Keep the codebase clean and DRY
 
 ## Goal
 Web app visualizing a graph of technologies, styled like a mapping app (shadcn/ui design system, white background).
@@ -16,12 +16,12 @@ Web app visualizing a graph of technologies, styled like a mapping app (shadcn/u
 
 ## Project structure
 ```
-index.html, package.json, vite.config.js, package-lock.json
-src/main.jsx
-src/App.jsx          # Cytoscape init (ref), form/nav state, zoom buttons
+index.html, package.json, vite.config.ts, package-lock.json
+src/main.tsx
+src/App.tsx          # Cytoscape init (ref), form/nav state, zoom buttons
 src/App.css          # shadcn CSS variables + component styles
-src/lib/utils.js     # cn() utility
-src/data.js          # graph data: NODES (19) + EDGES (19)
+src/lib/utils.ts     # cn() utility
+src/data.ts          # graph data: NODES (19) + EDGES (19)
 src/components/ui/   # button, input, select, card, label, separator
 dist/                # production build
 e2e.test.js          # puppeteer test (passes)
@@ -60,6 +60,6 @@ npm test             # e2e test in headless Chromium
 Serve `dist/` over HTTP (don't open `dist/index.html` directly — asset paths are absolute).
 
 ## Known limitations
-- Graph data is hardcoded in `src/data.js` (no persistent storage / node editor)
+- Graph data is hardcoded in `src/data.ts` (no persistent storage / node editor)
 - `window.__cy` debug hook exposed
 - Edge labels small along bezier curves; readable at higher zoom
