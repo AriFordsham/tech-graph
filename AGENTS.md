@@ -1,5 +1,7 @@
 # tech-graph — Project Status
 
+K
+
 ## Goal
 Web app visualizing a graph of technologies, styled like a mapping app (shadcn/ui design system, white background).
 - **Nodes** = languages / language-like abstractions (all same color); **edges** = technologies (`interpret` / `translate`)
