@@ -72,31 +72,31 @@ function stopServer() {
     return { nodes: cy.nodes().length, edges: cy.edges().length };
   });
   console.log('nodes/edges:', counts);
-  if (counts.nodes !== 19 || counts.edges !== 19) {
+  if (counts.nodes !== 11 || counts.edges !== 11) {
     throw new Error('unexpected graph size');
   }
 
-  // 2. Graph algorithm: shortest path C -> x86-processor
+  // 2. Graph algorithm: shortest path C -> x86 machine code
   const pathInfo = await page.evaluate(() => {
     const c = window.__cy;
     const d = c.elements().dijkstra(c.nodes('#c'));
-    const path = d.pathTo(c.nodes('#x86-processor'));
+    const path = d.pathTo(c.nodes('#x86-machine-code'));
     return {
       labels: path.nodes().map((n) => n.data('label')),
       hops: path.edges().length,
     };
   });
   console.log(
-    'shortest path C -> x86-processor:',
+    'shortest path C -> x86 machine code:',
     pathInfo.labels.join(' -> '),
     '| hops:',
     pathInfo.hops,
   );
-  if (pathInfo.hops !== 3) throw new Error('expected 3 hops');
+  if (pathInfo.hops !== 2) throw new Error('expected 2 hops');
 
   // 3. Search -> pan to node
   console.log('STEP 3: typing search...');
-  await page.type('#nodeSearch', 'JavaScript');
+  await page.type('#nodeSearch', 'C');
   console.log('STEP 3: typed, clicking Go...');
   await page.click('#btnGo');
   console.log('STEP 3: clicked Go, waiting...');
@@ -107,7 +107,7 @@ function stopServer() {
     return cy.nodes('.highlighted-node').map(n => n.data('label'));
   });
   console.log('highlighted nodes:', highlighted);
-  if (!highlighted.includes('JavaScript')) throw new Error('search did not pan');
+  if (!highlighted.includes('C')) throw new Error('search did not pan');
 
   // 4. From/To navigation
   await page.evaluate(() => {
@@ -126,7 +126,7 @@ function stopServer() {
       el.dispatchEvent(new Event('change', { bubbles: true }));
     };
     setSelect('fromSelect', 'c');
-    setSelect('toSelect', 'x86-processor');
+    setSelect('toSelect', 'x86-machine-code');
   });
   await page.evaluate(() => {
     const btn = document.getElementById('btnNavigate');
@@ -145,7 +145,7 @@ function stopServer() {
   });
   console.log('navigation:', nav);
   if (!nav.msg.includes('Route')) throw new Error('navigation did not compute route');
-  if (nav.highlightedNodes !== 4 || nav.highlightedEdges !== 3) {
+  if (nav.highlightedNodes !== 3 || nav.highlightedEdges !== 2) {
     throw new Error('expected path nodes/edges highlighted');
   }
 

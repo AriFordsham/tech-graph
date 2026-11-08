@@ -35,8 +35,6 @@ export const NODE_TYPES: Record<string, NodeTypeDef> = {
 
 export const NODES: Node[] = [
   { id: 'physical-hardware', label: 'physical hardware', type: 'hardware', root: true, size: 44 },
-  { id: 'x86-processor',   label: 'x86 processor',   type: 'hardware', size: 30 },
-  { id: 'arm-processor',   label: 'ARM processor',   type: 'hardware', size: 30 },
   { id: 'x86-machine-code', label: 'x86 machine code', type: 'machine-code', size: 30 },
   { id: 'arm-machine-code', label: 'ARM machine code', type: 'machine-code', size: 30 },
   { id: 'intel-assembly', label: 'Intel Assembly', type: 'assembly', size: 30 },
@@ -44,41 +42,26 @@ export const NODES: Node[] = [
   { id: 'c',      label: 'C',              type: 'language', size: 30 },
   { id: 'cpp',    label: 'C++',            type: 'language', size: 30 },
   { id: 'java',   label: 'Java',           type: 'language', size: 30 },
-  { id: 'js',     label: 'JavaScript',     type: 'language', size: 30 },
   { id: 'python', label: 'Python',         type: 'language', size: 30 },
   { id: 'java-bytecode',   label: 'Java bytecode',   type: 'bytecode', size: 30 },
   { id: 'python-bytecode', label: 'Python bytecode', type: 'bytecode', size: 30 },
-  { id: 'jvm',      label: 'JVM',          type: 'runtime', size: 30 },
-  { id: 'cpython',  label: 'CPython',      type: 'runtime', size: 30 },
-  { id: 'browser',  label: 'web browser',  type: 'runtime', size: 30 },
-  { id: 'nodejs',   label: 'Node.js',      type: 'runtime', size: 30 },
-  { id: 'v8',       label: 'V8',           type: 'engine', size: 30 },
 ];
 
 export const EDGES: Edge[] = [
-  { id: 'e1', source: 'x86-machine-code', target: 'x86-processor', type: 'interpret', label: 'x86 CPU' },
-  { id: 'e2', source: 'x86-processor',   target: 'physical-hardware', type: 'interpret', label: 'x86 processor' },
-  { id: 'e3', source: 'arm-processor',   target: 'physical-hardware', type: 'interpret', label: 'ARM processor' },
-  { id: 'e4', source: 'intel-assembly', target: 'x86-machine-code', type: 'translate', label: 'Intel Assembler' },
-  { id: 'e5', source: 'arm-assembly',   target: 'arm-machine-code',   type: 'translate', label: 'ARM Assembler' },
-  { id: 'e6',  source: 'c', target: 'intel-assembly', type: 'translate', label: 'C compiler (gcc)' },
-  { id: 'e7',  source: 'c', target: 'arm-assembly',   type: 'translate', label: 'C compiler (gcc)' },
-  { id: 'e8',  source: 'cpp', target: 'intel-assembly', type: 'translate', label: 'C++ compiler' },
-  { id: 'e9',  source: 'java', target: 'java-bytecode', type: 'translate', label: 'javac' },
-  { id: 'e10', source: 'java-bytecode', target: 'jvm', type: 'interpret', label: 'JVM' },
-  { id: 'e11', source: 'jvm', target: 'x86-processor', type: 'interpret', label: 'JIT' },
-  { id: 'e12', source: 'jvm', target: 'arm-processor', type: 'interpret', label: 'JIT' },
-  { id: 'e13', source: 'python', target: 'python-bytecode', type: 'translate', label: 'CPython compiler' },
-  { id: 'e14', source: 'python-bytecode', target: 'cpython', type: 'interpret', label: 'CPython' },
-  { id: 'e15', source: 'cpython', target: 'x86-processor', type: 'interpret', label: 'CPython' },
-  { id: 'e16', source: 'js', target: 'browser', type: 'interpret', label: 'JS engine' },
-  { id: 'e17', source: 'js', target: 'nodejs', type: 'interpret', label: 'Node.js (V8)' },
-  { id: 'e18', source: 'js', target: 'x86-processor', type: 'interpret', label: 'V8 JIT' },
-  { id: 'e19', source: 'v8', target: 'nodejs', type: 'translate', label: 'bundled with' },
+  { id: 'e1', source: 'x86-machine-code', target: 'physical-hardware', type: 'interpret', label: 'x86 processor' },
+  { id: 'e2', source: 'arm-machine-code', target: 'physical-hardware', type: 'interpret', label: 'ARM processor' },
+  { id: 'e3', source: 'intel-assembly', target: 'x86-machine-code', type: 'translate', label: 'Intel Assembler' },
+  { id: 'e4', source: 'arm-assembly',   target: 'arm-machine-code',   type: 'translate', label: 'ARM Assembler' },
+  { id: 'e5',  source: 'c', target: 'intel-assembly', type: 'translate', label: 'C compiler (gcc)' },
+  { id: 'e6',  source: 'c', target: 'arm-assembly',   type: 'translate', label: 'C compiler (gcc)' },
+  { id: 'e7',  source: 'cpp', target: 'intel-assembly', type: 'translate', label: 'C++ compiler' },
+  { id: 'e8',  source: 'java', target: 'java-bytecode', type: 'translate', label: 'javac' },
+  { id: 'e9',  source: 'python', target: 'python-bytecode', type: 'translate', label: 'CPython compiler' },
+  { id: 'e10', source: 'java-bytecode', target: 'physical-hardware', type: 'interpret', label: 'JVM' },
+  { id: 'e11', source: 'python-bytecode', target: 'physical-hardware', type: 'interpret', label: 'CPython' },
 ];
 
 export function toCyElements(): cytoscape.ElementDefinition[] {
-  const defaultColor = NODE_TYPES.default.color;
   const nodeEls: cytoscape.ElementDefinition[] = NODES.map((n) => ({
     group: 'nodes' as const,
     data: {
@@ -86,7 +69,7 @@ export function toCyElements(): cytoscape.ElementDefinition[] {
       label: n.label,
       type: n.type,
       root: !!n.root,
-      color: defaultColor,
+      color: (NODE_TYPES[n.type]?.color) ?? NODE_TYPES.default.color,
       size: n.size ?? NODE_TYPES.default.size,
     },
   }));
@@ -103,7 +86,6 @@ export function toCyElements(): cytoscape.ElementDefinition[] {
         type: e.type,
         color: isInterpret ? '#3b82f6' : '#f59e0b',
         width: 2,
-        style: isInterpret ? 'solid' : 'dashed',
       },
     };
   });

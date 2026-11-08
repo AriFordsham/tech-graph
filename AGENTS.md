@@ -21,18 +21,18 @@ src/main.tsx
 src/App.tsx          # Cytoscape init (ref), form/nav state, zoom buttons
 src/App.css          # shadcn CSS variables + component styles
 src/lib/utils.ts     # cn() utility
-src/data.ts          # graph data: NODES (19) + EDGES (19)
+src/data.ts          # graph data: NODES (11) + EDGES (11)
 src/components/ui/   # button, input, select, card, label, separator
 dist/                # production build
 e2e.test.js          # puppeteer test (passes)
 ```
 
 ## Graph content (seed data)
-- `physical hardware` (root); `x86`/`ARM` processors → hardware
-- `x86 machine code` →interpret→ `x86 processor`; `Intel Assembly` →translate→ `x86 machine code`; `C` →translate→ `Intel Assembly`
-- `JavaScript` →interpret→ `web browser` / `Node.js` / `x86 processor`
-- Extra paths: Java→javac→bytecode→JVM→hardware; Python→CPython→hardware; C++/ARM variants
-- Example shortest path: `C` → Intel Assembly → x86 machine code → x86 processor (3 hops)
+- `physical hardware` (root, base language); `x86 machine code` →interpret→ `physical hardware` (x86 processor); `ARM machine code` →interpret→ `physical hardware` (ARM processor)
+- `x86 machine code` ←translate← `Intel Assembly` ←translate← `C` / `C++`; `ARM machine code` ←translate← `ARM Assembly` ←translate← `C` / `C++`
+- `Java bytecode` ←translate← `Java` (javac) →interpret→ `physical hardware` (JVM); `Python bytecode` ←translate← `Python` (CPython compiler) →interpret→ `physical hardware` (CPython)
+- Graph is fully connected: every node reaches `physical hardware`. All remaining machine nodes (processors, JVM, CPython, browser, Node.js, V8) and `JavaScript` eliminated; only `physical hardware` remains as the base-language root
+- Example shortest path: `C` → Intel Assembly → x86 machine code (2 hops)
 
 ## Current state — COMPLETE
 - [x] React port with shadcn/ui components on white background
