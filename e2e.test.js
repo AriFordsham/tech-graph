@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const PORT = 5230;
+const PORT = 5300;
 const distDir = join(process.cwd(), 'dist');
 
 let server;

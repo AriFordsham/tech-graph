@@ -6,11 +6,34 @@ Edges = technologies (typically programs) connecting nodes, of two types:
   - translate  : the source is translated/compiled into the target
 */
 
-export const NODE_TYPES = {
+export type EdgeType = 'interpret' | 'translate';
+
+export interface NodeTypeDef {
+  color: string;
+  size: number;
+}
+
+export interface Node {
+  id: string;
+  label: string;
+  type: string;
+  root?: boolean;
+  size?: number;
+}
+
+export interface Edge {
+  id: string;
+  source: string;
+  target: string;
+  type: EdgeType;
+  label: string;
+}
+
+export const NODE_TYPES: Record<string, NodeTypeDef> = {
   default: { color: '#2563eb', size: 30 },
 };
 
-export const NODES = [
+export const NODES: Node[] = [
   { id: 'physical-hardware', label: 'physical hardware', type: 'hardware', root: true, size: 44 },
   { id: 'x86-processor',   label: 'x86 processor',   type: 'hardware', size: 30 },
   { id: 'arm-processor',   label: 'ARM processor',   type: 'hardware', size: 30 },
@@ -32,7 +55,7 @@ export const NODES = [
   { id: 'v8',       label: 'V8',           type: 'engine', size: 30 },
 ];
 
-export const EDGES = [
+export const EDGES: Edge[] = [
   { id: 'e1', source: 'x86-machine-code', target: 'x86-processor', type: 'interpret', label: 'x86 CPU' },
   { id: 'e2', source: 'x86-processor',   target: 'physical-hardware', type: 'interpret', label: 'x86 processor' },
   { id: 'e3', source: 'arm-processor',   target: 'physical-hardware', type: 'interpret', label: 'ARM processor' },
@@ -54,26 +77,24 @@ export const EDGES = [
   { id: 'e19', source: 'v8', target: 'nodejs', type: 'translate', label: 'bundled with' },
 ];
 
-export function toCyElements() {
+export function toCyElements(): cytoscape.ElementDefinition[] {
   const defaultColor = NODE_TYPES.default.color;
-  const nodeEls = NODES.map((n) => {
-    return {
-      group: 'nodes',
-      data: {
-        id: n.id,
-        label: n.label,
-        type: n.type,
-        root: !!n.root,
-        color: defaultColor,
-        size: n.size || NODE_TYPES.default.size,
-      },
-    };
-  });
+  const nodeEls: cytoscape.ElementDefinition[] = NODES.map((n) => ({
+    group: 'nodes' as const,
+    data: {
+      id: n.id,
+      label: n.label,
+      type: n.type,
+      root: !!n.root,
+      color: defaultColor,
+      size: n.size ?? NODE_TYPES.default.size,
+    },
+  }));
 
-  const edgeEls = EDGES.map((e) => {
+  const edgeEls: cytoscape.ElementDefinition[] = EDGES.map((e) => {
     const isInterpret = e.type === 'interpret';
     return {
-      group: 'edges',
+      group: 'edges' as const,
       data: {
         id: e.id,
         source: e.source,

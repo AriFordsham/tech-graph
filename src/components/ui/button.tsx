@@ -2,7 +2,16 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 
-export function Button({ className, variant = 'default', size = 'default', ...props }) {
+export function Button({
+  className,
+  variant = 'default',
+  size = 'default',
+  ...props
+}: React.ComponentPropsWithoutRef<'button'> & {
+  variant?: 'default' | 'primary' | 'outline' | 'link';
+  size?: 'default' | 'sm';
+  className?: string;
+}) {
   return (
     <button
       className={cn(
