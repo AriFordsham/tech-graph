@@ -264,11 +264,8 @@ CSS variables follow shadcn/ui theming spec (OKLCH color space).
     pointer-events: auto;
   }
 
-  /* Search lozenge — top left, Google Maps style */
+  /* Search lozenge — Google Maps style */
   .search-lozenge {
-    position: absolute;
-    top: 16px;
-    left: 16px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -278,13 +275,22 @@ CSS variables follow shadcn/ui theming spec (OKLCH color space).
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     padding: 2px 8px 2px 10px;
     pointer-events: auto;
+    position: relative; /* positioning context for the autocomplete dropdown */
+  }
+  /* Standalone placement: fixed top-left. */
+  .search-lozenge--fixed {
+    position: absolute;
+    top: 16px;
+    left: 16px;
   }
   .search-lozenge input {
     border: none;
     background: transparent;
     box-shadow: none;
+    width: auto;
+    min-width: 150px;
+    max-width: 260px;
     padding: 2px 4px;
-    min-width: 170px;
   }
   .search-lozenge input::placeholder {
     color: var(--muted-foreground);
@@ -295,36 +301,78 @@ CSS variables follow shadcn/ui theming spec (OKLCH color space).
     border-color: transparent;
   }
 
-  /* Two stacked lozenges for directions mode */
-  .lozenge-stack {
+  /* Autocomplete dropdown — appears below the input as you type */
+  .search-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    border: 1px solid var(--border);
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+  }
+  .search-menu-item {
+    padding: 6px 10px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .search-menu-item:hover,
+  .search-menu-item--active {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  /* Directions panel — two search lozenges inside a rounded rectangle */
+  .directions-panel {
     position: absolute;
     top: 16px;
     left: 16px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-  }
-  .lozenge {
     border: 1px solid var(--border);
-    border-radius: 9999px;
-    background: var(--background);
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    padding: 2px 8px;
+    border-radius: var(--radius);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    padding: 8px;
+    pointer-events: auto;
+    z-index: 30;
+    min-width: 220px;
   }
-  .lozenge select {
-    border: none;
-    background: transparent;
-    box-shadow: none;
-    padding: 2px 4px;
-    min-width: 150px;
-    appearance: none;
-    background-image: none;
-    padding-right: 4px;
+  .directions-panel .close-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    border-radius: 9999px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+    z-index: 35;
   }
-  .lozenge select:focus {
-    outline: none;
-    box-shadow: none;
-    border-color: transparent;
+  /* Each row inside the panel is a search-style lozenge (border comes from
+     .search-lozenge; this row just keeps them stacked and aligned). */
+  .directions-lozenges {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
   /* Icon-only buttons */
@@ -366,27 +414,55 @@ CSS variables follow shadcn/ui theming spec (OKLCH color space).
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   }
 
+  /* Edge-type key — bottom left */
+  .key {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    padding: 6px 10px;
+    font-size: 0.875rem;
+    line-height: 1.25;
+    z-index: 30;
+    pointer-events: none;
+  }
+  .key-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    margin-bottom: 2px;
+  }
+  .key-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: auto;
+  }
+  .key-swatch {
+    width: 16px;
+    height: 2px;
+    border-radius: 1px;
+  }
+  .key-swatch--interpret {
+    background: #3b82f6;
+  }
+  .key-swatch--translate {
+    background: #f59e0b;
+  }
+
   /* --- Status hints --- */
   .hint {
     font-size: 0.75rem;
     line-height: 1.25rem;
     color: var(--muted-foreground);
   }
-
-  #navResult {
-    position: absolute;
-    top: 130px;
-    left: 16px;
-    max-width: 280px;
-    background: var(--background);
-    padding: 4px 8px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  }
-  .nav-warn { color: var(--destructive); }
-  .nav-ok { color: var(--primary); }
-  .nav-info { color: var(--muted-foreground); }
 
   /* --- Utility --- */
   .row {

@@ -15,7 +15,6 @@ export interface NodeTypeDef {
 export interface Node {
   id: string;
   label: string;
-  type: string;
   root?: boolean;
 }
 
@@ -32,17 +31,17 @@ export const NODE_TYPES: Record<string, NodeTypeDef> = {
 };
 
 export const NODES: Node[] = [
-  { id: 'physical-hardware', label: 'physical hardware', type: 'hardware', root: true },
-  { id: 'x86-machine-code', label: 'x86 machine code', type: 'machine-code' },
-  { id: 'arm-machine-code', label: 'ARM machine code', type: 'machine-code' },
-  { id: 'intel-assembly', label: 'Intel Assembly', type: 'assembly' },
-  { id: 'arm-assembly',   label: 'ARM Assembly',   type: 'assembly' },
-  { id: 'c',      label: 'C',              type: 'language' },
-  { id: 'cpp',    label: 'C++',            type: 'language' },
-  { id: 'java',   label: 'Java',           type: 'language' },
-  { id: 'python', label: 'Python',         type: 'language' },
-  { id: 'java-bytecode',   label: 'Java bytecode',   type: 'bytecode' },
-  { id: 'python-bytecode', label: 'Python bytecode', type: 'bytecode' },
+  { id: 'physical-hardware', label: 'physical hardware', root: true },
+  { id: 'x86-machine-code', label: 'x86 machine code' },
+  { id: 'arm-machine-code', label: 'ARM machine code' },
+  { id: 'intel-assembly', label: 'Intel Assembly' },
+  { id: 'arm-assembly',   label: 'ARM Assembly'   },
+  { id: 'c',      label: 'C'              },
+  { id: 'cpp',    label: 'C++',           },
+  { id: 'java',   label: 'Java',          },
+  { id: 'python', label: 'Python',        },
+  { id: 'java-bytecode',   label: 'Java bytecode',   },
+  { id: 'python-bytecode', label: 'Python bytecode', },
 ];
 
 /**
@@ -107,9 +106,8 @@ export function toCyElements(): cytoscape.ElementDefinition[] {
     data: {
       id: n.id,
       label: n.label,
-      type: n.type,
       root: !!n.root,
-      color: (NODE_TYPES[n.type]?.color) ?? NODE_TYPES.default.color,
+      color: NODE_TYPES.default.color,
       ...computeNodeDimensions(n.label),
     },
   }));
