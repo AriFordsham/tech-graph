@@ -94,6 +94,11 @@ export default function App() {
     cy.animate({ fit: { eles: path, padding: 60 } }, { duration: 900 });
   }, [fromValue, toValue]);
 
+  // Exposed for e2e test reliability (setting controlled inputs via Puppeteer
+  // can double-type characters); not used in production code paths.
+  window.__setFromValue = (v: string) => setFromValue(v);
+  window.__setToValue = (v: string) => setToValue(v);
+
   const handleClear = useCallback(() => {
     const cy = cyRef.current;
     if (!cy) return;

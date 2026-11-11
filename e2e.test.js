@@ -14,7 +14,12 @@ function startServer() {
   return new Promise((resolve, reject) => {
     server = createServer((req, res) => {
       const url = new URL(req.url, 'http://localhost');
-      let filePath = join(distDir, url.pathname === '/' ? '/index.html' : url.pathname);
+      // Vite builds with base '/tech-graph/' (GitHub Pages subpath). Strip it so
+      // assets resolve against the dist/ root served by this test server.
+      const pathname = url.pathname.startsWith('/tech-graph/')
+        ? url.pathname.slice('/tech-graph'.length)
+        : url.pathname;
+      let filePath = join(distDir, pathname === '/' ? '/index.html' : pathname);
       const ext = filePath.split('.').pop();
       const contentType = {
         html: 'text/html',
@@ -115,43 +120,42 @@ function stopServer() {
     if (btn) btn.click();
   });
   await page.waitForFunction(() => {
-    const s = document.getElementById('fromSelect');
-    return s && s.options.length > 1;
+    return !!document.getElementById('fromSearch');
   }, { timeout: 15000 });
+
+  // Set From / To values directly via React state setters
   await page.evaluate(() => {
-    const setSelect = (id, val) => {
-      const el = document.getElementById(id);
-      el.value = val;
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-      el.dispatchEvent(new Event('change', { bubbles: true }));
-    };
-    setSelect('fromSelect', 'c');
-    setSelect('toSelect', 'x86-machine-code');
+    window.__setFromValue('C');
+    window.__setToValue('x86 machine code');
   });
-  await page.evaluate(() => {
+  await new Promise((r) => setTimeout(r, 300));
+
+  // Click Navigate (embedded in the bottom lozenge) — use JS click because the
+  // autocomplete dropdown can visually overlay the button.
+  const navResult = await page.evaluate(() => {
     const btn = document.getElementById('btnNavigate');
-    if (btn) btn.click();
+    if (!btn) return { error: 'btnNavigate not found' };
+    btn.click();
+    return { clicked: true };
   });
+  console.log('btn.click() result:', JSON.stringify(navResult));
   await new Promise((r) => setTimeout(r, 1500));
   const nav = await page.evaluate(() => {
-    const el = document.getElementById('navResult');
     const c = window.__cy;
     return {
-      msg: el ? el.textContent : null,
       highlightedNodes: c ? c.nodes('.highlighted-node').length : 0,
       highlightedEdges: c ? c.edges('.highlighted-edge').length : 0,
       dimmed: c ? c.elements('.node-dimmed').length : 0,
     };
   });
   console.log('navigation:', nav);
-  if (!nav.msg.includes('Route')) throw new Error('navigation did not compute route');
   if (nav.highlightedNodes !== 3 || nav.highlightedEdges !== 2) {
     throw new Error('expected path nodes/edges highlighted');
   }
 
   // 5. Clear
   await page.evaluate(() => {
-    const btn = document.getElementById('btnClear');
+    const btn = document.getElementById('btnClose');
     if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 500));

@@ -184,7 +184,9 @@ export default function SearchLozenge({
           variant="primary"
           size="sm"
           className="icon-btn"
-          onClick={goButtonOnClick ?? onSearch}
+          onClick={() => {
+            (goButtonOnClick ?? onSearch)?.();
+          }}
           aria-label={goAriaLabel}
         >
           🔍
